@@ -1,7 +1,12 @@
 package kr.got.security.security.configs;
 
+import kr.got.security.security.handler.CustomAccessDeniedHandler;
+import kr.got.security.security.provider.CustomAuthenticationProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationDetailsSource;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -9,25 +14,29 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
+import javax.servlet.http.HttpServletRequest;
+
+@RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
+    private final AuthenticationSuccessHandler customAuthenticationSuccessHandler;
+    private final AuthenticationFailureHandler customAuthenticationFailureHandler;
+    private final AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> authenticationDetailsSource;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        String password = passwordEncoder().encode("1111");
+//        auth.userDetailsService(userDetailsService);
+        auth.authenticationProvider(authenticationProvider());
+    }
 
-        // 메모리단에 임시 사용자 만들어서 접근 권한 확인용
-        auth.inMemoryAuthentication()
-                .withUser("user").password(password).roles("USER")
-                .and()
-                .withUser("manager").password(password).roles("MANAGER", "USER")
-                .and()
-                .withUser("admin").password(password).roles("ADMIN", "MANAGER", "USER");
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        return new CustomAuthenticationProvider();
     }
 
     @Override
@@ -39,12 +48,35 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests(authorizeRequests -> authorizeRequests
-                        .antMatchers("/", "/users").permitAll()
+                        .antMatchers("/", "/users", "/login*").permitAll()
                         .antMatchers("/mypage").hasRole("USER")
                         .antMatchers("/message").hasRole("MANAGER")
                         .antMatchers("/config").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .formLogin();
+                .formLogin(formLogin -> formLogin
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login_proc")
+                        .defaultSuccessUrl("/")
+                        .authenticationDetailsSource(authenticationDetailsSource)
+                        .successHandler(customAuthenticationSuccessHandler)
+                        .failureHandler(customAuthenticationFailureHandler)
+                        .permitAll()
+                )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(customAccessDeniedHandler())
+                );
+    }
+
+    @Bean
+    public AccessDeniedHandler customAccessDeniedHandler() {
+        CustomAccessDeniedHandler accessDeniedHandler = new CustomAccessDeniedHandler();
+        accessDeniedHandler.setErrorPage("/denied");
+        return accessDeniedHandler;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 }
