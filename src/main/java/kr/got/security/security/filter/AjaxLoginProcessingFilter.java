@@ -1,7 +1,7 @@
 package kr.got.security.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kr.got.security.domain.AccountDto;
+import kr.got.security.domain.dto.AccountDto;
 import kr.got.security.security.token.AjaxAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;

@@ -1,7 +1,7 @@
 package kr.got.security.controller.user;
 
-import kr.got.security.domain.Account;
-import kr.got.security.domain.AccountDto;
+import kr.got.security.domain.entity.Account;
+import kr.got.security.domain.dto.AccountDto;
 import kr.got.security.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

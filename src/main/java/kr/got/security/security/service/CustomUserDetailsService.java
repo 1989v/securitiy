@@ -1,6 +1,6 @@
 package kr.got.security.security.service;
 
-import kr.got.security.domain.Account;
+import kr.got.security.domain.entity.Account;
 import kr.got.security.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;

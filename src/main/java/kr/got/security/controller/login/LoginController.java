@@ -1,6 +1,6 @@
 package kr.got.security.controller.login;
 
-import kr.got.security.domain.Account;
+import kr.got.security.domain.entity.Account;
 import kr.got.security.security.token.AjaxAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
