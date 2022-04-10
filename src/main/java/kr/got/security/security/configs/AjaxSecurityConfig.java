@@ -30,9 +30,10 @@ public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .antMatcher("/api/**")
                 .authorizeRequests(authorizeRequests -> authorizeRequests
                         .antMatchers("/api/messages").hasRole("MANAGER")
-                        .antMatchers("/api/**").permitAll()
+                        .antMatchers("/api/login").permitAll()
                         .anyRequest().authenticated()
                 )
 //                .addFilterBefore(ajaxLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class)
