@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@Order(0)
+@Order(1)
 @EnableWebSecurity
 public class AjaxSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override

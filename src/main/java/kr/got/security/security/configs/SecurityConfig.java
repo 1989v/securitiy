@@ -22,7 +22,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Order(1)
+@Order(0)
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -47,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests(authorizeRequests -> authorizeRequests
                         .antMatchers("/", "/users", "/login*").permitAll()
                         .antMatchers("/mypage").hasRole("USER")
-                        .antMatchers("/message").hasRole("MANAGER")
+                        .antMatchers("/messages").hasRole("MANAGER")
                         .antMatchers("/config").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
