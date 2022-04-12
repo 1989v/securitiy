@@ -4,6 +4,7 @@ import kr.got.security.domain.dto.ResourcesDto;
 import kr.got.security.domain.entity.Resources;
 import kr.got.security.domain.entity.Role;
 import kr.got.security.repository.RoleRepository;
+import kr.got.security.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import kr.got.security.service.ResourcesService;
 import kr.got.security.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class ResourcesController {
     private final ResourcesService resourcesService;
     private final RoleRepository roleRepository;
     private final RoleService roleService;
+    private final UrlFilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource;
 
     @GetMapping(value="/admin/resources")
     public String getResources(Model model) throws Exception {
@@ -46,6 +48,7 @@ public class ResourcesController {
         resources.setRoleSet(roles);
 
         resourcesService.createResources(resources);
+        filterInvocationSecurityMetadataSource.reload();
 
         return "redirect:/admin/resources";
     }
@@ -84,6 +87,7 @@ public class ResourcesController {
 
         Resources resources = resourcesService.getResources(Long.valueOf(id));
         resourcesService.deleteResources(Long.valueOf(id));
+        filterInvocationSecurityMetadataSource.reload();
 
         return "redirect:/admin/resources";
     }
