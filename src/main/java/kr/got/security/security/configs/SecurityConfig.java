@@ -1,6 +1,7 @@
 package kr.got.security.security.configs;
 
 import kr.got.security.security.factory.UrlResourcesMapFactoryBean;
+import kr.got.security.security.filter.PermitAllFilter;
 import kr.got.security.security.handler.CustomAccessDeniedHandler;
 import kr.got.security.security.metadatasource.UrlFilterInvocationSecurityMetadataSource;
 import kr.got.security.security.provider.CustomAuthenticationProvider;
@@ -93,12 +94,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public FilterSecurityInterceptor customFilterSecurityInterceptor() throws Exception {
-        FilterSecurityInterceptor filterSecurityInterceptor = new FilterSecurityInterceptor();
-        filterSecurityInterceptor.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
-        filterSecurityInterceptor.setAccessDecisionManager(affirmativeBased());
-        filterSecurityInterceptor.setAuthenticationManager(authenticationManagerBean());
-        return filterSecurityInterceptor;
+    public PermitAllFilter customFilterSecurityInterceptor() throws Exception {
+        final String[] permitAllResources = {"/", "/login", "/user/login/**"};
+
+        PermitAllFilter permitAllFilter = new PermitAllFilter(permitAllResources);
+        permitAllFilter.setSecurityMetadataSource(urlFilterInvocationSecurityMetadataSource());
+        permitAllFilter.setAccessDecisionManager(affirmativeBased());
+        permitAllFilter.setAuthenticationManager(authenticationManagerBean());
+        return permitAllFilter;
     }
 
     private AccessDecisionManager affirmativeBased() {
