@@ -1,13 +1,7 @@
 package kr.got.security.security.listener;
 
-import kr.got.security.domain.entity.Account;
-import kr.got.security.domain.entity.Resources;
-import kr.got.security.domain.entity.Role;
-import kr.got.security.domain.entity.RoleHierarchy;
-import kr.got.security.repository.ResourcesRepository;
-import kr.got.security.repository.RoleHierarchyRepository;
-import kr.got.security.repository.RoleRepository;
-import kr.got.security.repository.UserRepository;
+import kr.got.security.domain.entity.*;
+import kr.got.security.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -29,6 +23,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     private final RoleRepository roleRepository;
     private final ResourcesRepository resourcesRepository;
     private final RoleHierarchyRepository roleHierarchyRepository;
+    private final AccessIpRepository accessIpRepository;
     private final PasswordEncoder passwordEncoder;
 
     private static AtomicInteger count = new AtomicInteger(0);
@@ -42,6 +37,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         }
 
         setupSecurityResources();
+        setupAccessIpData();
 
         alreadySetup = true;
     }
@@ -141,5 +137,23 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         }
         RoleHierarchy childRoleHierarchy = roleHierarchyRepository.save(roleHierarchy);
         childRoleHierarchy.setParentName(parentRoleHierarchy);
+    }
+
+    private void setupAccessIpData() {
+        AccessIp byIpAddress = accessIpRepository.findByIpAddress("0:0:0:0:0:0:0:1");
+        if (byIpAddress == null) {
+            AccessIp accessIp = AccessIp.builder()
+                    .ipAddress("0:0:0:0:0:0:0:1")
+                    .build();
+            accessIpRepository.save(accessIp);
+        }
+
+        byIpAddress = accessIpRepository.findByIpAddress("127.0.0.1");
+        if (byIpAddress == null) {
+            AccessIp accessIp = AccessIp.builder()
+                    .ipAddress("127.0.0.1")
+                    .build();
+            accessIpRepository.save(accessIp);
+        }
     }
 }
