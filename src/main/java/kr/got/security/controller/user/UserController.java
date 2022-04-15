@@ -22,6 +22,7 @@ public class UserController {
 
     @GetMapping("/mypage")
     public String myPage(@AuthenticationPrincipal Account account, Authentication authentication, Principal principal) {
+        userService.order();
         return "user/mypage";
     }
 
