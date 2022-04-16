@@ -26,6 +26,12 @@ public class UserController {
         return "user/mypage";
     }
 
+    @GetMapping("/order")
+    public String order() {
+        userService.order();
+        return "user/mypage";
+    }
+
     @GetMapping("/users")
     public String createUser() {
         return "user/login/register";
